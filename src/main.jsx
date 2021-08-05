@@ -7,9 +7,11 @@ import { Auth0Provider } from '@auth0/auth0-react';
 ReactDOM.render(
   <React.StrictMode>
     <Auth0Provider
-      domain='dev-7buknonb.jp.auth0.com'
-      clientId='cirvSLVxfhR8jIHHOMrj59DL9Ptstb2O'
+      domain={import.meta.env.VITE_AUTH0_DOMAIN}
+      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
       redirectUri={window.location.origin}
+      audience={import.meta.env.VITE_AUTH0_AUDIENCE}
+      scope={import.meta.env.VITE_AUTH0_SCOPE}
     >
       <App />
     </Auth0Provider>
