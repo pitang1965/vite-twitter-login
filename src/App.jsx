@@ -1,92 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
-import { useAuth0 } from '@auth0/auth0-react';
-import LoginButton from './components/LoginButton';
-import LogoutButton from './components/LogoutButton';
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Auth0Provider } from '@auth0/auth0-react';
+import { createBrowserHistory } from 'history';
+import Home from './components/pages/Home';
+import Profile from './components/pages/Profile';
+import FooterMenu from './components/layout/FooterMenu';
+
+export const history = createBrowserHistory();
+
+const onRedirectCallback = (appState) => {
+  history.replace(appState?.returnTo || window.location.pathname);
+};
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [userMetadata, setUserMetadata] = useState(null);
-  const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
-    useAuth0();
-
-  useEffect(() => {
-    const getUserMetadata = async () => {
-      try {
-        const accessToken = await getAccessTokenSilently({
-          audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-          scope: import.meta.env.VITE_AUTH0_SCOPE,
-        });
-
-        const userDetailsByIdUrl = `${import.meta.env.VITE_AUTH0_AUDIENCE}users/${user.sub}`;
-
-        const metadataResponse = await fetch(userDetailsByIdUrl, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-
-        const { description } = await metadataResponse.json();
-        setUserMetadata (description.replaceAll('\n', '  '));
-      } catch (e) {
-        console.log(e.message);
-      }
-    };
-
-    getUserMetadata();
-  }, [getAccessTokenSilently, user?.sub]);
-
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <img src={logo} className='App-logo' alt='logo' />
-        <p>Hello Vite + React!</p>
-        {isLoading && <div>読み込み中...</div>}
-        {!isAuthenticated && <LoginButton />}
-        {isAuthenticated && (
-          <div>
-            <LogoutButton />
-            <img src={user.picture} alte={user.name} />
-            <h2>{user.name}</h2>
-            <p>{user.email}</p>
-            <h3>ユーザー情報</h3>
-            {userMetadata ? (
-              <div>{JSON.stringify(userMetadata)}</div>
-            ) : (
-              '※なし'
-            )}
-          </div>
-        )}
-        <p>
-          <button type='button' onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.jsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className='App-link'
-            href='https://reactjs.org'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className='App-link'
-            href='https://vitejs.dev/guide/features.html'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
+    <Auth0Provider
+      domain={import.meta.env.VITE_AUTH0_DOMAIN}
+      clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
+      audience={import.meta.env.VITE_AUTH0_AUDIENCE}
+      scope={import.meta.env.VITE_AUTH0_SCOPE}
+      redirectUri={window.location.origin}
+      onRedirectCallback={onRedirectCallback}
+    >
+      <Router history={history}>
+        <Switch>
+          <Route exact path='/' component={Home} />
+          <Route exact path='/profile' component={Profile} />
+        </Switch>
+        <FooterMenu />
+      </Router>
+    </Auth0Provider>
   );
 }
 
