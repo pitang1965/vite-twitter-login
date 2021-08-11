@@ -5,6 +5,7 @@ import { createBrowserHistory } from 'history';
 import Home from './components/pages/Home';
 import Profile from './components/pages/Profile';
 import FooterMenu from './components/layout/FooterMenu';
+import ProtectedRoute from './components/route/ProtectedRoute';
 
 export const history = createBrowserHistory();
 
@@ -25,7 +26,7 @@ function App() {
       <Router history={history}>
         <Switch>
           <Route exact path='/' component={Home} />
-          <Route exact path='/profile' component={Profile} />
+          <ProtectedRoute exact path='/profile' component={Profile} />
         </Switch>
         <FooterMenu />
       </Router>
