@@ -18,7 +18,7 @@ const Home = () => {
         {isAuthenticated && (
           <div>
             <LogoutButton />
-            <img src={user.picture} alte={user.name} />
+            <img src={user.picture} alt={user.name} />
             <h2>{user.name}</h2>
           </div>
         )}
